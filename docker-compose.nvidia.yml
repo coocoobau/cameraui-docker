@@ -9,6 +9,10 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
+    # iGPU + NVIDIA combo: uncomment to also pass the Intel/AMD render node,
+    # then decode can run on the iGPU (vaapi) while CUDA does inference
+    # devices:
+    #   - /dev/dri:/dev/dri
     deploy:
       resources:
         reservations:
