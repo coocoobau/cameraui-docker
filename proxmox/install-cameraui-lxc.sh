@@ -140,6 +140,7 @@ pct create "$CTID" "${TEMPLATE_STORAGE}:vztmpl/${TEMPLATE}" \
 # containers (PVE >= 8.2). Intel/AMD: renderD128 covers VA-API and OpenCL,
 # card0 goes along for software that falls back to the card node. NVIDIA:
 # every /dev/nvidia* node incl. the caps nodes newer drivers require.
+HAS_ACCEL=0
 if [ "$GPU_PASSTHROUGH" = "1" ]; then
     DEV_IDX=0
     add_dev() {
@@ -156,6 +157,14 @@ if [ "$GPU_PASSTHROUGH" = "1" ]; then
         echo "==> adding /dev/dri passthrough"
         add_dev /dev/dri/renderD128
         if [ -e /dev/dri/card0 ]; then add_dev /dev/dri/card0; fi
+        # Intel NPU (Core Ultra), used by the OpenVINO plugin when present
+        for node in /dev/accel/accel[0-9]*; do
+            if [ -e "$node" ]; then
+                echo "==> adding ${node} passthrough (NPU)"
+                add_dev "$node"
+                HAS_ACCEL=1
+            fi
+        done
     fi
 fi
 
@@ -260,6 +269,9 @@ if [ "$GPU_PASSTHROUGH" = "1" ]; then
         GPU_YAML=$'    deploy:\n      resources:\n        reservations:\n          devices:\n            - driver: nvidia\n              count: all\n              capabilities: [gpu, compute, video, utility]'
     else
         GPU_YAML=$'    devices:\n      - /dev/dri:/dev/dri'
+        if [ "$HAS_ACCEL" = "1" ]; then
+            GPU_YAML="${GPU_YAML}"$'\n      - /dev/accel:/dev/accel'
+        fi
     fi
 fi
 pct exec "$CTID" -- bash -lc "
