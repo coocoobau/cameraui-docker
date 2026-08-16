@@ -16,7 +16,7 @@ apt-get update
 apt-get install -y --no-install-recommends \
     ca-certificates curl wget gnupg xz-utils \
     tzdata locales \
-    procps psmisc lsof net-tools iproute2 iputils-ping \
+    procps psmisc lsof net-tools iproute2 iputils-ping pciutils \
     jq nano openssl tini \
     dbus avahi-daemon avahi-utils libnss-mdns libavahi-compat-libdnssd-dev \
     python3 python3-venv python3-pip python3-dev \
