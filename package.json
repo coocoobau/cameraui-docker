@@ -1,6 +1,6 @@
 {
   "name": "@camera.ui/docker",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "private": true,
   "description": "camera.ui docker images",
   "type": "module",
