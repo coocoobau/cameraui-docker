@@ -16,7 +16,7 @@ on:
         default: latest
   push:
     tags:
-      - "v*"
+      - "vCCB*"
 
 permissions:
   contents: read
@@ -76,16 +76,16 @@ jobs:
             echo "push=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # A vX.Y.Z tag pins the launcher to X.Y.Z (reproducible image, natural
+      # A vCCBX.Y.Z tag pins the launcher to X.Y.Z (reproducible image, natural
       # layer cache invalidation). A trailing -<digits> is a docker-only
-      # revision: vX.Y.Z-2 still installs launcher X.Y.Z but tags the image
+      # revision: vCCBX.Y.Z-2 still installs launcher X.Y.Z but tags the image
       # X.Y.Z-2 (npm prereleases like X.Y.Z-beta.1 are left untouched).
       # Manual runs use the input, default latest.
       - name: Resolve launcher version
         id: version
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            RAW="${GITHUB_REF_NAME#v}"
+            RAW="${GITHUB_REF_NAME#vCCB}"
             VERSION="$RAW"
             if [[ "$RAW" =~ ^(.+)-[0-9]+$ ]]; then
               VERSION="${BASH_REMATCH[1]}"
