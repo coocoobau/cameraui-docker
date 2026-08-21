@@ -1,6 +1,9 @@
 name: Build & Push Images
-
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ main ]
+    
   workflow_dispatch:
     inputs:
       push:
@@ -60,7 +63,14 @@ jobs:
       - name: Decide whether to push
         id: mode
         run: |
-          if [ "${{ github.event_name }}" = "push" ] || [ "${{ inputs.push }}" = "true" ]; then
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # GITHUB_REF looks like refs/heads/main or refs/tags/v1.2.3
+            if [[ "$GITHUB_REF" == "refs/heads/main" ]] || [[ "$GITHUB_REF" == refs/tags/* ]]; then
+              echo "push=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "push=false" >> "$GITHUB_OUTPUT"
+            fi
+          elif [ "${{ inputs.push }}" = "true" ]; then
             echo "push=true" >> "$GITHUB_OUTPUT"
           else
             echo "push=false" >> "$GITHUB_OUTPUT"
