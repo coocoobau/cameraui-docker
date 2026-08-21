@@ -2,7 +2,7 @@
 # camera.ui — one Dockerfile, four flavors (build-args FLAVOR + BASE_IMAGE):
 #   cpu     ubuntu:24.04                                    (amd64, arm64)
 #   intel   ubuntu:24.04                                    (amd64)
-#   nvidia  nvidia/cuda:12.6.2-cudnn-runtime-ubuntu24.04    (amd64)
+#   nvidia  nvidia/cuda:13.3.1-cudnn-runtime-ubuntu24.04    (amd64)
 #   amd     ubuntu:24.04                                    (amd64)
 
 ARG BASE_IMAGE=ubuntu:24.04
