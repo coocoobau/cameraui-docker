@@ -1,4 +1,4 @@
-name: Build & Push Image
+name: Build & Push Images
 
 on:
   workflow_dispatch:
@@ -26,7 +26,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  IMAGE: ghcr.io/cameraui/camera.ui
+  IMAGE: ghcr.io/coocoobau/camera.ui
 
 jobs:
   build:
