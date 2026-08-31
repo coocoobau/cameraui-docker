@@ -15,13 +15,16 @@
 # The pairing code is only needed once — the worker stores its credentials
 # and reconnects on its own afterwards.
 #
-# Hardware acceleration works the same as on the main deployment: layer an
-# overlay file on top and pass through the devices (see docker-compose.yml).
+# Hardware acceleration: set the flavor tag and the device below. The
+# docker-compose.<vendor>.yml overlays do NOT apply here, they patch a service
+# named "cameraui" and this one is "cameraui-worker", so layering one on top
+# starts a second, unrelated container instead of accelerating the worker.
 # =============================================================================
 name: cameraui-worker
 
 services:
   cameraui-worker:
+    # :latest = software. Use :intel, :nvidia or :amd to match the hardware.
     image: ghcr.io/cameraui/camera.ui:latest
     container_name: cameraui-worker
     restart: unless-stopped
@@ -57,9 +60,11 @@ services:
       # Worker credentials, plugin runtimes and local recording buffers.
       - cameraui-worker-data:/data
 
-    # Pass through hardware for decoding/AI, same as the main deployment:
+    # Pass through hardware for decoding/AI. Intel/AMD:
     # devices:
     #   - /dev/dri:/dev/dri
+    # NVIDIA needs the container toolkit on this machine plus the environment
+    # and deploy blocks from docker-compose.nvidia.yml.
 
 volumes:
   cameraui-worker-data:
