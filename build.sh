@@ -25,22 +25,22 @@ PUSH="${PUSH:-0}"
 NVIDIA_BASE="${NVIDIA_BASE:-nvidia/cuda:13.2.0-cudnn-runtime-ubuntu24.04}"
 NVIDIA_CUDA12_BASE="${NVIDIA_CUDA12_BASE:-nvidia/cuda:12.6.2-cudnn-runtime-ubuntu24.04}"
 
-# flavor -> base image
-declare -A BASE=(
-    [cpu]="ubuntu:24.04"
-    [intel]="ubuntu:24.04"
-    [nvidia]="${NVIDIA_BASE}"
-    [nvidia-cuda12]="${NVIDIA_CUDA12_BASE}"
-    [amd]="ubuntu:24.04"
-)
+# flavor -> base image (functions, macOS ships bash 3.2 without associative arrays)
+base_for() {
+    case "$1" in
+        cpu|intel|amd) echo "ubuntu:24.04" ;;
+        nvidia) echo "${NVIDIA_BASE}" ;;
+        nvidia-cuda12) echo "${NVIDIA_CUDA12_BASE}" ;;
+        *) echo "" ;;
+    esac
+}
 # flavor -> default multi-arch platforms (push only)
-declare -A PLAT=(
-    [cpu]="linux/amd64,linux/arm64"
-    [intel]="linux/amd64"
-    [nvidia]="linux/amd64"
-    [nvidia-cuda12]="linux/amd64"
-    [amd]="linux/amd64"
-)
+plat_for() {
+    case "$1" in
+        cpu) echo "linux/amd64,linux/arm64" ;;
+        *) echo "linux/amd64" ;;
+    esac
+}
 
 flavors=("$@")
 [ ${#flavors[@]} -eq 0 ] && flavors=(cpu intel nvidia nvidia-cuda12 amd)
@@ -64,7 +64,7 @@ else
 fi
 
 for flavor in "${flavors[@]}"; do
-    base="${BASE[$flavor]:-}"
+    base="$(base_for "$flavor")"
     [ -z "$base" ] && { echo "unknown flavor: $flavor" >&2; exit 1; }
 
     if [ "$flavor" = "cpu" ]; then
@@ -78,7 +78,7 @@ for flavor in "${flavors[@]}"; do
     platarg=()
     if [ "$PUSH" = "1" ]; then
         out=(--push)
-        platforms="${PLATFORMS:-${PLAT[$flavor]}}"
+        platforms="${PLATFORMS:-$(plat_for "$flavor")}"
         platarg=(--platform "$platforms")
     else
         out=(--load)   # local single-arch (buildx --load can't do multi-arch)
