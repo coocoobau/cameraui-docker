@@ -29,7 +29,7 @@ NVIDIA_CUDA12_BASE="${NVIDIA_CUDA12_BASE:-nvidia/cuda:12.6.2-cudnn-runtime-ubunt
 base_for() {
     case "$1" in
         cpu|intel|amd) echo "ubuntu:24.04" ;;
-        nvidia) echo "${NVIDIA_BASE}" ;;
+        nvidia|nvidia-tensorrt) echo "${NVIDIA_BASE}" ;;
         nvidia-cuda12) echo "${NVIDIA_CUDA12_BASE}" ;;
         *) echo "" ;;
     esac
@@ -43,7 +43,7 @@ plat_for() {
 }
 
 flavors=("$@")
-[ ${#flavors[@]} -eq 0 ] && flavors=(cpu intel nvidia nvidia-cuda12 amd)
+[ ${#flavors[@]} -eq 0 ] && flavors=(cpu intel nvidia nvidia-tensorrt nvidia-cuda12 amd)
 
 builder=cameraui-builder
 if ! docker buildx inspect "$builder" >/dev/null 2>&1; then

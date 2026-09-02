@@ -1,8 +1,9 @@
 # syntax=docker/dockerfile:1.7
-# camera.ui — one Dockerfile, five flavors (build-args FLAVOR + BASE_IMAGE):
+# camera.ui — one Dockerfile, six flavors (build-args FLAVOR + BASE_IMAGE):
 #   cpu     ubuntu:24.04                                    (amd64, arm64)
 #   intel   ubuntu:24.04                                    (amd64)
 #   nvidia  nvidia/cuda:13.2.0-cudnn-runtime-ubuntu24.04    (amd64, driver 580+)
+#   nvidia-tensorrt  same base, plus the TensorRT runtime     (amd64, driver 580+)
 #   nvidia-cuda12  nvidia/cuda:12.6.2-cudnn-runtime-ubuntu24.04  (amd64, older drivers + ONNX Legacy)
 #   amd     ubuntu:24.04                                    (amd64)
 
