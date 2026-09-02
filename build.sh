@@ -22,13 +22,15 @@ cd "$(dirname "$0")"
 IMAGE="${IMAGE:-ghcr.io/cameraui/camera.ui}"
 TAG="${TAG:-latest}"
 PUSH="${PUSH:-0}"
-NVIDIA_BASE="${NVIDIA_BASE:-nvidia/cuda:12.6.2-cudnn-runtime-ubuntu24.04}"
+NVIDIA_BASE="${NVIDIA_BASE:-nvidia/cuda:13.2.0-cudnn-runtime-ubuntu24.04}"
+NVIDIA_CUDA12_BASE="${NVIDIA_CUDA12_BASE:-nvidia/cuda:12.6.2-cudnn-runtime-ubuntu24.04}"
 
 # flavor -> base image
 declare -A BASE=(
     [cpu]="ubuntu:24.04"
     [intel]="ubuntu:24.04"
     [nvidia]="${NVIDIA_BASE}"
+    [nvidia-cuda12]="${NVIDIA_CUDA12_BASE}"
     [amd]="ubuntu:24.04"
 )
 # flavor -> default multi-arch platforms (push only)
@@ -36,11 +38,12 @@ declare -A PLAT=(
     [cpu]="linux/amd64,linux/arm64"
     [intel]="linux/amd64"
     [nvidia]="linux/amd64"
+    [nvidia-cuda12]="linux/amd64"
     [amd]="linux/amd64"
 )
 
 flavors=("$@")
-[ ${#flavors[@]} -eq 0 ] && flavors=(cpu intel nvidia amd)
+[ ${#flavors[@]} -eq 0 ] && flavors=(cpu intel nvidia nvidia-cuda12 amd)
 
 builder=cameraui-builder
 if ! docker buildx inspect "$builder" >/dev/null 2>&1; then
