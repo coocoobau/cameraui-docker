@@ -1,6 +1,9 @@
-name: Build & Push Image
-
+name: Build & Push Images
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ main ]
+    
   workflow_dispatch:
     inputs:
       push:
@@ -13,7 +16,7 @@ on:
         default: latest
   push:
     tags:
-      - "v*"
+      - "vCCB*"
 
 permissions:
   contents: read
@@ -26,7 +29,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  IMAGE: ghcr.io/cameraui/camera.ui
+  IMAGE: ghcr.io/coocoobau/camera.ui
 
 jobs:
   build:
@@ -66,22 +69,29 @@ jobs:
       - name: Decide whether to push
         id: mode
         run: |
-          if [ "${{ github.event_name }}" = "push" ] || [ "${{ inputs.push }}" = "true" ]; then
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # GITHUB_REF looks like refs/heads/main or refs/tags/v1.2.3
+            if [[ "$GITHUB_REF" == "refs/heads/main" ]] || [[ "$GITHUB_REF" == refs/tags/* ]]; then
+              echo "push=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "push=false" >> "$GITHUB_OUTPUT"
+            fi
+          elif [ "${{ inputs.push }}" = "true" ]; then
             echo "push=true" >> "$GITHUB_OUTPUT"
           else
             echo "push=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # A vX.Y.Z tag pins the launcher to X.Y.Z (reproducible image, natural
+      # A vCCBX.Y.Z tag pins the launcher to X.Y.Z (reproducible image, natural
       # layer cache invalidation). A trailing -<digits> is a docker-only
-      # revision: vX.Y.Z-2 still installs launcher X.Y.Z but tags the image
+      # revision: vCCBX.Y.Z-2 still installs launcher X.Y.Z but tags the image
       # X.Y.Z-2 (npm prereleases like X.Y.Z-beta.1 are left untouched).
       # Manual runs use the input, default latest.
       - name: Resolve launcher version
         id: version
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            RAW="${GITHUB_REF_NAME#v}"
+            RAW="${GITHUB_REF_NAME#vCCB}"
             VERSION="$RAW"
             if [[ "$RAW" =~ ^(.+)-[0-9]+$ ]]; then
               VERSION="${BASH_REMATCH[1]}"
