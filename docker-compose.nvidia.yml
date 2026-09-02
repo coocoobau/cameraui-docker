@@ -1,5 +1,8 @@
 # NVIDIA NVENC/NVDEC + CUDA overlay.
 # Requires the NVIDIA Container Toolkit on the host.
+# The :nvidia image ships CUDA 13 and needs an NVIDIA driver 580 or newer.
+# On older driver use :nvidia-cuda12 together with the ONNX Legacy plugin.
+# For the ONNX plugin's tensorrt provider, use :nvidia-tensorrt instead.
 #   docker compose -f docker-compose.yml -f docker-compose.nvidia.yml up -d
 name: cameraui
 

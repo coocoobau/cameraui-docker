@@ -13,12 +13,14 @@ First boot installs the server and comes up after a few minutes — follow it wi
 
 ## Image flavors
 
-| Flavor | Tag      | Hardware acceleration        | Arch          |
-| ------ | -------- | ---------------------------- | ------------- |
-| CPU    | `latest` | software                     | amd64 + arm64 |
-| Intel  | `intel`  | Quick Sync / VA-API + OpenCL | amd64         |
-| NVIDIA | `nvidia` | NVENC / NVDEC + CUDA         | amd64         |
-| AMD    | `amd`    | Mesa VA-API + OpenCL         | amd64         |
+| Flavor           | Tag             | Hardware acceleration                                                  | Arch          |
+| ---------------- | --------------- | ---------------------------------------------------------------------- | ------------- |
+| CPU              | `latest`        | software                                                               | amd64 + arm64 |
+| Intel            | `intel`         | Quick Sync / VA-API + OpenCL                                           | amd64         |
+| NVIDIA           | `nvidia`        | NVENC / NVDEC + CUDA 13 (driver 580+)                                  | amd64         |
+| NVIDIA (TensorRT) | `nvidia-tensorrt` | NVENC / NVDEC + CUDA 13 + TensorRT (driver 580+) | amd64 |
+| NVIDIA (CUDA 12) | `nvidia-cuda12` | NVENC / NVDEC + CUDA 12, for older drivers with the ONNX Legacy plugin | amd64         |
+| AMD              | `amd`           | Mesa VA-API + OpenCL                                                   | amd64         |
 
 Pick the flavor for your machine via its compose override (`docker-compose.{intel,nvidia,amd}.yml`).
 
